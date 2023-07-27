@@ -11,5 +11,5 @@ import authRouter from './api/src/routers/authRouter.js';
 
 
 app.use('/user', userRouter);
-app.use('/auth', authRouter);
 
+ 
