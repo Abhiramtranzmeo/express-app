@@ -21,14 +21,13 @@ const userSchema = new Schema({
     age: Number,
     email: { type : String , unique : true, required : true, dropDups: true },
     password: String,
-    confirmPassword: String
 });
 
 userSchema.plugin(uniqueValidator);
 userSchema.pre('save', function() {
     let isValidEmail = regex.test(this.email);
     if (isValidEmail) {
-        console.log('Email address is valid...');
+        // valid password...
     } else {
         throw Error("Invalid Email...");
     };
@@ -44,8 +43,4 @@ const userModel = new model('user', userSchema);
 
 
 export default userModel;
-
-
-
-
 

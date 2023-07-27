@@ -1,13 +1,15 @@
-import exp from 'constants';
 import { Router } from 'express';
 import { compareSync } from 'bcrypt';
-import userModel from '../../src/models/userModel.js';
 const authRouter = Router();
+import jwt from 'jsonwebtoken';
+const JWT_KEY = 'dsader432r4tr4rdsfaffbnbvn';
+import userModel from '../../src/models/userModel.js';
+import validPasswordCheck from './passworkCheck.js';
 
 
 authRouter
 .route('/signup')
-.post(createUser)
+.post(validPasswordCheck, createUser)
 
 authRouter
 .route('/login')
@@ -21,7 +23,7 @@ async function createUser(req, res) {
             if (req.body.password === req.body.confirmPassword) {
                 const user = new userModel(dataObj);
                 await user.save().then(() => {
-                    res.status(201).json({
+                    return res.status(201).json({
                         message: "user created successfully.",
                     });
                 })
@@ -45,13 +47,18 @@ async function createUser(req, res) {
 async function loginUser(req, res) {
     try {
         let data = req.body;
-        let user = userModel.findOne({email: data.email});
+        let user = await userModel.findOne({email: data.email});
         if (user) {
-            checkPassword = compareSync(data.password, user.password);
+            let checkPassword = compareSync(data.password, user.password);
             if (checkPassword) {
+                const uid = user._id;
+                const token = jwt.sign({payload: uid}, JWT_KEY);
                 return res.json({
                     message: 'user has logged in successfully.',
-                    userDetails: data
+                    userDetails: {
+                        "_id": user._id,
+                        "token": token
+                    }
                 });
             } else {
                 return res.status(403).json({
@@ -64,6 +71,7 @@ async function loginUser(req, res) {
             });
         };
     } catch(err) {
+        console.log(err);
         return res.status(500).json({
             message: err
         });
@@ -72,7 +80,4 @@ async function loginUser(req, res) {
 
 
 export default authRouter;
-
-
-
 

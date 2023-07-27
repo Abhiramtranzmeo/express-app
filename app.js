@@ -1,6 +1,4 @@
-import exp from 'constants';
 import express, { json } from 'express';
-import userModel from './api/src/models/userModel.js';
 
 const app = express();
 
@@ -14,6 +12,4 @@ import authRouter from './api/src/routers/authRouter.js';
 
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
-
-
 
